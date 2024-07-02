@@ -1,50 +1,72 @@
 import pygame
-import math
 import sys
 
 pygame.init()
-screen = pygame.display.set_mode((800, 600))
-running = True
+WIDTH, HEIGHT = 700, 700
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Ellipse Drawing Algorithm")
 
-font = pygame.font.Font(None, 36)
+GOLD = (255, 215, 0)
+WHITE = (0, 0, 0)
 
-# Define colors
-WHITE = (255, 255, 255)
-YELLOW = (255, 255, 0)
-BLUE = (0, 0, 255)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
+def draw_ellipse(xc, yc, rx, ry):
+    x = 0
+    y = ry
+    rx_sq = rx ** 2
+    ry_sq = ry ** 2
+    tworx_sq = 2 * rx_sq
+    twory_sq = 2 * ry_sq
+    px = 0
+    py = tworx_sq * y
 
-# Define planet parameters (radius, distance from sun, speed, color)
-planets = [
-    {"radius": 10, "distance": 100, "speed": 0.01, "color": BLUE},
-    {"radius": 15, "distance": 150, "speed": 0.008, "color": RED},
-    {"radius": 20, "distance": 200, "speed": 0.005, "color": GREEN}
-]
+    # Initial decision parameter for region 1
+    p1 = ry_sq - (rx_sq * ry) + (0.25 * rx_sq)
+    while px < py:
+        screen.set_at((xc + x, yc + y), GOLD)
+        screen.set_at((xc - x, yc + y), GOLD)
+        screen.set_at((xc + x, yc - y), GOLD)
+        screen.set_at((xc - x, yc - y), GOLD)
 
-def draw_planet(x, y, radius, color):
-    pygame.draw.circle(screen, color, (x, y), radius)
+        x += 1
+        px += twory_sq
+        if p1 < 0:
+            p1 += ry_sq + px
+        else:
+            y -= 1
+            py -= tworx_sq
+            p1 += ry_sq + px - py
 
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    # Initial decision parameter for region 2
+    p2 = (ry_sq) * ((x + 0.5) ** 2) + (rx_sq) * ((y - 1) ** 2) - (rx_sq * ry_sq)
+    while y > 0:
+        screen.set_at((xc + x, yc + y), GOLD)
+        screen.set_at((xc - x, yc + y), GOLD)
+        screen.set_at((xc + x, yc - y), GOLD)
+        screen.set_at((xc - x, yc - y), GOLD)
 
-    screen.fill(WHITE)  # Background color
+        y -= 1
+        py -= tworx_sq
+        if p2 > 0:
+            p2 += rx_sq - py
+        else:
+            x += 1
+            px += twory_sq
+            p2 += rx_sq - py + px
 
-    # Draw Sun
-    pygame.draw.circle(screen, YELLOW, (400, 300), 30)
+def main():
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+                
+        screen.fill(WHITE)
 
-    # Draw planets
-    for planet in planets:
-        # Calculate planet position based on its distance and angle
-        angle = pygame.time.get_ticks() * planet["speed"]
-        x = int(400 + planet["distance"] * math.cos(angle))
-        y = int(300 + planet["distance"] * math.sin(angle))
-        draw_planet(x, y, planet["radius"], planet["color"])
+        # Draw the ellipse
+        draw_ellipse(WIDTH // 2, HEIGHT // 2, 200, 100)
 
-    pygame.display.update()
+        # Update the display
+        pygame.display.flip()
 
-pygame.quit()
-sys.exit()
- 
+if __name__ == "__main__":
+    main()
