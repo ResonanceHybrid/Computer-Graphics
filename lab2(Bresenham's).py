@@ -46,11 +46,7 @@ def main():
 
         screen.fill(BLACK)
         draw_line(50, 50, 10, 100, 3)  
-        draw_line(50, 50, 100, 100, 3)  
-        draw_line(10, 100, 100, 100, 3) 
-        draw_line(10, 70, 100, 70, 3) 
-        draw_line(10, 70, 50, 120, 3) 
-        draw_line(100, 70, 50, 120, 3) 
+        
         
         pygame.display.flip()
 
